@@ -1,0 +1,9 @@
+/home/juan/Documentos/Stm32/STM32F446RE/Chip_headers/CMSIS/Include/core_cm4.h:1688:22:__NVIC_EnableIRQ	16	static
+../Src/uart.c:30:6:dma1_ch4_stream6	24	static
+../Src/uart.c:91:6:uart2_rx_tx_interrupcion_init	8	static
+../Src/uart.c:153:6:uart2_rx_tx_init	8	static
+../Src/uart.c:210:5:__io_putchar	16	static
+../Src/uart.c:216:6:uart2_write	16	static
+../Src/uart.c:232:6:uart2_read	4	static
+../Src/uart.c:243:13:uart_set_bautrate	24	static
+../Src/uart.c:248:17:compute_uart_bd	16	static

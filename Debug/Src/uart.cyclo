@@ -1,0 +1,9 @@
+core_cm4.h:1688:22:__NVIC_EnableIRQ	2
+uart.c:30:6:dma1_ch4_stream6	2
+uart.c:91:6:uart2_rx_tx_interrupcion_init	1
+uart.c:153:6:uart2_rx_tx_init	1
+uart.c:210:5:__io_putchar	1
+uart.c:216:6:uart2_write	2
+uart.c:232:6:uart2_read	2
+uart.c:243:13:uart_set_bautrate	1
+uart.c:248:17:compute_uart_bd	1

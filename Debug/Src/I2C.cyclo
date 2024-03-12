@@ -1,0 +1,4 @@
+I2C.c:23:6:I2C_int	1
+I2C.c:81:6:I2C1_byRead	8
+I2C.c:148:6:I2C1_burstRead	12
+I2C.c:241:6:I2C1_burstWrite	7

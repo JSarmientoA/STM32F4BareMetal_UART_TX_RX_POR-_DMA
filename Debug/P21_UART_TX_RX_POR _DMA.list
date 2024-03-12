@@ -1,0 +1,744 @@
+
+P21_UART_TX_RX_POR _DMA.elf:     file format elf32-littlearm
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .isr_vector   000001c4  08000000  08000000  00010000  2**0
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  1 .text         000003f0  080001c4  080001c4  000101c4  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  2 .rodata       00000020  080005b4  080005b4  000105b4  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  3 .ARM.extab    00000000  080005d4  080005d4  000105dc  2**0
+                  CONTENTS
+  4 .ARM          00000000  080005d4  080005d4  000105dc  2**0
+                  CONTENTS
+  5 .preinit_array 00000000  080005d4  080005dc  000105dc  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  6 .init_array   00000004  080005d4  080005d4  000105d4  2**2
+                  CONTENTS, ALLOC, LOAD, DATA
+  7 .fini_array   00000004  080005d8  080005d8  000105d8  2**2
+                  CONTENTS, ALLOC, LOAD, DATA
+  8 .data         00000000  20000000  20000000  000105dc  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  9 .bss          0000001c  20000000  080005dc  00020000  2**2
+                  ALLOC
+ 10 ._user_heap_stack 00000604  2000001c  080005dc  0002001c  2**0
+                  ALLOC
+ 11 .ARM.attributes 00000030  00000000  00000000  000105dc  2**0
+                  CONTENTS, READONLY
+ 12 .debug_info   00000e6e  00000000  00000000  0001060c  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+ 13 .debug_abbrev 00000348  00000000  00000000  0001147a  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+ 14 .debug_aranges 000000b8  00000000  00000000  000117c8  2**3
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+ 15 .debug_ranges 00000090  00000000  00000000  00011880  2**3
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+ 16 .debug_macro  00001138  00000000  00000000  00011910  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+ 17 .debug_line   00000f04  00000000  00000000  00012a48  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+ 18 .debug_str    0008f550  00000000  00000000  0001394c  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+ 19 .comment      00000050  00000000  00000000  000a2e9c  2**0
+                  CONTENTS, READONLY
+ 20 .debug_frame  000001e8  00000000  00000000  000a2eec  2**2
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+
+Disassembly of section .text:
+
+080001c4 <__do_global_dtors_aux>:
+ 80001c4:	b510      	push	{r4, lr}
+ 80001c6:	4c05      	ldr	r4, [pc, #20]	; (80001dc <__do_global_dtors_aux+0x18>)
+ 80001c8:	7823      	ldrb	r3, [r4, #0]
+ 80001ca:	b933      	cbnz	r3, 80001da <__do_global_dtors_aux+0x16>
+ 80001cc:	4b04      	ldr	r3, [pc, #16]	; (80001e0 <__do_global_dtors_aux+0x1c>)
+ 80001ce:	b113      	cbz	r3, 80001d6 <__do_global_dtors_aux+0x12>
+ 80001d0:	4804      	ldr	r0, [pc, #16]	; (80001e4 <__do_global_dtors_aux+0x20>)
+ 80001d2:	f3af 8000 	nop.w
+ 80001d6:	2301      	movs	r3, #1
+ 80001d8:	7023      	strb	r3, [r4, #0]
+ 80001da:	bd10      	pop	{r4, pc}
+ 80001dc:	20000000 	.word	0x20000000
+ 80001e0:	00000000 	.word	0x00000000
+ 80001e4:	0800059c 	.word	0x0800059c
+
+080001e8 <frame_dummy>:
+ 80001e8:	b508      	push	{r3, lr}
+ 80001ea:	4b03      	ldr	r3, [pc, #12]	; (80001f8 <frame_dummy+0x10>)
+ 80001ec:	b11b      	cbz	r3, 80001f6 <frame_dummy+0xe>
+ 80001ee:	4903      	ldr	r1, [pc, #12]	; (80001fc <frame_dummy+0x14>)
+ 80001f0:	4803      	ldr	r0, [pc, #12]	; (8000200 <frame_dummy+0x18>)
+ 80001f2:	f3af 8000 	nop.w
+ 80001f6:	bd08      	pop	{r3, pc}
+ 80001f8:	00000000 	.word	0x00000000
+ 80001fc:	20000004 	.word	0x20000004
+ 8000200:	0800059c 	.word	0x0800059c
+
+08000204 <main>:
+#define	LED_PIN		PIN5
+
+/*Este programa tranfiere la cadena de de caracteres por utilizando la uart */
+static void dma1_callback(void);
+int main(void)
+{
+ 8000204:	b5b0      	push	{r4, r5, r7, lr}
+ 8000206:	b088      	sub	sp, #32
+ 8000208:	af00      	add	r7, sp, #0
+	char mensaje[31] = "Transmision con STM32 por DMA\n\r";
+ 800020a:	4b13      	ldr	r3, [pc, #76]	; (8000258 <main+0x54>)
+ 800020c:	463c      	mov	r4, r7
+ 800020e:	461d      	mov	r5, r3
+ 8000210:	cd0f      	ldmia	r5!, {r0, r1, r2, r3}
+ 8000212:	c40f      	stmia	r4!, {r0, r1, r2, r3}
+ 8000214:	e895 000f 	ldmia.w	r5, {r0, r1, r2, r3}
+ 8000218:	c407      	stmia	r4!, {r0, r1, r2}
+ 800021a:	8023      	strh	r3, [r4, #0]
+ 800021c:	3402      	adds	r4, #2
+ 800021e:	0c1b      	lsrs	r3, r3, #16
+ 8000220:	7023      	strb	r3, [r4, #0]
+	/*Habilitación del reoj para el puerto GPIOA*/
+	RCC->AHB1ENR  |= 	GPIOAEN;//|=, es asignación con OR binario
+ 8000222:	4b0e      	ldr	r3, [pc, #56]	; (800025c <main+0x58>)
+ 8000224:	6b1b      	ldr	r3, [r3, #48]	; 0x30
+ 8000226:	4a0d      	ldr	r2, [pc, #52]	; (800025c <main+0x58>)
+ 8000228:	f043 0301 	orr.w	r3, r3, #1
+ 800022c:	6313      	str	r3, [r2, #48]	; 0x30
+
+	/*Estableser el pin PA5 como salida*/
+	GPIOA->MODER  |= 	(1U<<10);//Coloca el bit 10 a 1
+ 800022e:	4b0c      	ldr	r3, [pc, #48]	; (8000260 <main+0x5c>)
+ 8000230:	681b      	ldr	r3, [r3, #0]
+ 8000232:	4a0b      	ldr	r2, [pc, #44]	; (8000260 <main+0x5c>)
+ 8000234:	f443 6380 	orr.w	r3, r3, #1024	; 0x400
+ 8000238:	6013      	str	r3, [r2, #0]
+	GPIOA->MODER  &=~ 	(1U<<11);// Coloca   el bit 11 a 0, donde &=~ es Asignación con AND binario con complemto de uno
+ 800023a:	4b09      	ldr	r3, [pc, #36]	; (8000260 <main+0x5c>)
+ 800023c:	681b      	ldr	r3, [r3, #0]
+ 800023e:	4a08      	ldr	r2, [pc, #32]	; (8000260 <main+0x5c>)
+ 8000240:	f423 6300 	bic.w	r3, r3, #2048	; 0x800
+ 8000244:	6013      	str	r3, [r2, #0]
+
+	uart2_rx_tx_init();
+ 8000246:	f000 f8c5 	bl	80003d4 <uart2_rx_tx_init>
+	dma1_ch4_stream6((uint32_t)mensaje,(uint32_t)&USART2->DR,31);// Donde el registro RD Contiene el carácter de datos recibidos o transmitidos,                                                                                 //dependiendo de si se lee o se escribe.
+ 800024a:	463b      	mov	r3, r7
+ 800024c:	221f      	movs	r2, #31
+ 800024e:	4905      	ldr	r1, [pc, #20]	; (8000264 <main+0x60>)
+ 8000250:	4618      	mov	r0, r3
+ 8000252:	f000 f84b 	bl	80002ec <dma1_ch4_stream6>
+	while(1)
+ 8000256:	e7fe      	b.n	8000256 <main+0x52>
+ 8000258:	080005b4 	.word	0x080005b4
+ 800025c:	40023800 	.word	0x40023800
+ 8000260:	40020000 	.word	0x40020000
+ 8000264:	40004404 	.word	0x40004404
+
+08000268 <dma1_callback>:
+	{
+
+	}
+}
+
+static void dma1_callback(void) {
+ 8000268:	b480      	push	{r7}
+ 800026a:	af00      	add	r7, sp, #0
+	GPIOA->ODR|=LED_PIN;
+ 800026c:	4b05      	ldr	r3, [pc, #20]	; (8000284 <dma1_callback+0x1c>)
+ 800026e:	695b      	ldr	r3, [r3, #20]
+ 8000270:	4a04      	ldr	r2, [pc, #16]	; (8000284 <dma1_callback+0x1c>)
+ 8000272:	f043 0320 	orr.w	r3, r3, #32
+ 8000276:	6153      	str	r3, [r2, #20]
+}
+ 8000278:	bf00      	nop
+ 800027a:	46bd      	mov	sp, r7
+ 800027c:	f85d 7b04 	ldr.w	r7, [sp], #4
+ 8000280:	4770      	bx	lr
+ 8000282:	bf00      	nop
+ 8000284:	40020000 	.word	0x40020000
+
+08000288 <DMA1_Stream6_IRQHandler>:
+
+void DMA1_Stream6_IRQHandler(void){
+ 8000288:	b580      	push	{r7, lr}
+ 800028a:	af00      	add	r7, sp, #0
+	/*Chequee si el bit TCIF6 esta seteado*/
+	if(DMA1->HISR & HISR_TCIF6){
+ 800028c:	4b07      	ldr	r3, [pc, #28]	; (80002ac <DMA1_Stream6_IRQHandler+0x24>)
+ 800028e:	685b      	ldr	r3, [r3, #4]
+ 8000290:	f403 1300 	and.w	r3, r3, #2097152	; 0x200000
+ 8000294:	2b00      	cmp	r3, #0
+ 8000296:	d007      	beq.n	80002a8 <DMA1_Stream6_IRQHandler+0x20>
+		/*Se borra la bandera de interrupcion*/
+		DMA1->HIFCR |= HIFCR_TCIF6;
+ 8000298:	4b04      	ldr	r3, [pc, #16]	; (80002ac <DMA1_Stream6_IRQHandler+0x24>)
+ 800029a:	68db      	ldr	r3, [r3, #12]
+ 800029c:	4a03      	ldr	r2, [pc, #12]	; (80002ac <DMA1_Stream6_IRQHandler+0x24>)
+ 800029e:	f443 1300 	orr.w	r3, r3, #2097152	; 0x200000
+ 80002a2:	60d3      	str	r3, [r2, #12]
+		/*Hacer algo*/
+		dma1_callback();
+ 80002a4:	f7ff ffe0 	bl	8000268 <dma1_callback>
+		}
+	}
+ 80002a8:	bf00      	nop
+ 80002aa:	bd80      	pop	{r7, pc}
+ 80002ac:	40026000 	.word	0x40026000
+
+080002b0 <__NVIC_EnableIRQ>:
+  \details Enables a device specific interrupt in the NVIC interrupt controller.
+  \param [in]      IRQn  Device specific interrupt number.
+  \note    IRQn must not be negative.
+ */
+__STATIC_INLINE void __NVIC_EnableIRQ(IRQn_Type IRQn)
+{
+ 80002b0:	b480      	push	{r7}
+ 80002b2:	b083      	sub	sp, #12
+ 80002b4:	af00      	add	r7, sp, #0
+ 80002b6:	4603      	mov	r3, r0
+ 80002b8:	71fb      	strb	r3, [r7, #7]
+  if ((int32_t)(IRQn) >= 0)
+ 80002ba:	f997 3007 	ldrsb.w	r3, [r7, #7]
+ 80002be:	2b00      	cmp	r3, #0
+ 80002c0:	db0b      	blt.n	80002da <__NVIC_EnableIRQ+0x2a>
+  {
+    NVIC->ISER[(((uint32_t)IRQn) >> 5UL)] = (uint32_t)(1UL << (((uint32_t)IRQn) & 0x1FUL));
+ 80002c2:	79fb      	ldrb	r3, [r7, #7]
+ 80002c4:	f003 021f 	and.w	r2, r3, #31
+ 80002c8:	4907      	ldr	r1, [pc, #28]	; (80002e8 <__NVIC_EnableIRQ+0x38>)
+ 80002ca:	f997 3007 	ldrsb.w	r3, [r7, #7]
+ 80002ce:	095b      	lsrs	r3, r3, #5
+ 80002d0:	2001      	movs	r0, #1
+ 80002d2:	fa00 f202 	lsl.w	r2, r0, r2
+ 80002d6:	f841 2023 	str.w	r2, [r1, r3, lsl #2]
+  }
+}
+ 80002da:	bf00      	nop
+ 80002dc:	370c      	adds	r7, #12
+ 80002de:	46bd      	mov	sp, r7
+ 80002e0:	f85d 7b04 	ldr.w	r7, [sp], #4
+ 80002e4:	4770      	bx	lr
+ 80002e6:	bf00      	nop
+ 80002e8:	e000e100 	.word	0xe000e100
+
+080002ec <dma1_ch4_stream6>:
+static void uart_set_bautrate(USART_TypeDef *USARTx, uint32_t clkPerife, uint32_t BaudRate);
+static uint16_t compute_uart_bd(uint32_t clkPerife, uint32_t BaudRate);
+void uart2_write(int ch);
+int __io_putchar(int ch);
+
+void dma1_ch4_stream6(uint32_t origen,uint32_t destino,uint32_t longitud_dato){
+ 80002ec:	b580      	push	{r7, lr}
+ 80002ee:	b084      	sub	sp, #16
+ 80002f0:	af00      	add	r7, sp, #0
+ 80002f2:	60f8      	str	r0, [r7, #12]
+ 80002f4:	60b9      	str	r1, [r7, #8]
+ 80002f6:	607a      	str	r2, [r7, #4]
+	/*Habilitar el acceso de rloj al DMA*/
+	RCC->AHB1ENR |= DMA1RST;
+ 80002f8:	4b32      	ldr	r3, [pc, #200]	; (80003c4 <dma1_ch4_stream6+0xd8>)
+ 80002fa:	6b1b      	ldr	r3, [r3, #48]	; 0x30
+ 80002fc:	4a31      	ldr	r2, [pc, #196]	; (80003c4 <dma1_ch4_stream6+0xd8>)
+ 80002fe:	f443 1300 	orr.w	r3, r3, #2097152	; 0x200000
+ 8000302:	6313      	str	r3, [r2, #48]	; 0x30
+
+	/*Se desactiva la trnasmision que nos intersa (Canal 4 secuensia 6). Deshabilitar DMA*/
+	DMA1_Stream6->CR &= ~SxCR_EN;
+ 8000304:	4b30      	ldr	r3, [pc, #192]	; (80003c8 <dma1_ch4_stream6+0xdc>)
+ 8000306:	681b      	ldr	r3, [r3, #0]
+ 8000308:	4a2f      	ldr	r2, [pc, #188]	; (80003c8 <dma1_ch4_stream6+0xdc>)
+ 800030a:	f023 0301 	bic.w	r3, r3, #1
+ 800030e:	6013      	str	r3, [r2, #0]
+
+	while(DMA1_Stream6->CR & SxCR_EN){}
+ 8000310:	bf00      	nop
+ 8000312:	4b2d      	ldr	r3, [pc, #180]	; (80003c8 <dma1_ch4_stream6+0xdc>)
+ 8000314:	681b      	ldr	r3, [r3, #0]
+ 8000316:	f003 0301 	and.w	r3, r3, #1
+ 800031a:	2b00      	cmp	r3, #0
+ 800031c:	d1f9      	bne.n	8000312 <dma1_ch4_stream6+0x26>
+
+	/*Se borran todos lo indicadores de interrupcion para la secuencia 6
+	 * Se borran todos los indicadores de interrupcion*/
+	DMA1->HIFCR |= (1U<<16);
+ 800031e:	4b2b      	ldr	r3, [pc, #172]	; (80003cc <dma1_ch4_stream6+0xe0>)
+ 8000320:	68db      	ldr	r3, [r3, #12]
+ 8000322:	4a2a      	ldr	r2, [pc, #168]	; (80003cc <dma1_ch4_stream6+0xe0>)
+ 8000324:	f443 3380 	orr.w	r3, r3, #65536	; 0x10000
+ 8000328:	60d3      	str	r3, [r2, #12]
+	DMA1->HIFCR |= (1U<<18);
+ 800032a:	4b28      	ldr	r3, [pc, #160]	; (80003cc <dma1_ch4_stream6+0xe0>)
+ 800032c:	68db      	ldr	r3, [r3, #12]
+ 800032e:	4a27      	ldr	r2, [pc, #156]	; (80003cc <dma1_ch4_stream6+0xe0>)
+ 8000330:	f443 2380 	orr.w	r3, r3, #262144	; 0x40000
+ 8000334:	60d3      	str	r3, [r2, #12]
+	DMA1->HIFCR |= (1U<<19);
+ 8000336:	4b25      	ldr	r3, [pc, #148]	; (80003cc <dma1_ch4_stream6+0xe0>)
+ 8000338:	68db      	ldr	r3, [r3, #12]
+ 800033a:	4a24      	ldr	r2, [pc, #144]	; (80003cc <dma1_ch4_stream6+0xe0>)
+ 800033c:	f443 2300 	orr.w	r3, r3, #524288	; 0x80000
+ 8000340:	60d3      	str	r3, [r2, #12]
+	DMA1->HIFCR |= (1U<<20);
+ 8000342:	4b22      	ldr	r3, [pc, #136]	; (80003cc <dma1_ch4_stream6+0xe0>)
+ 8000344:	68db      	ldr	r3, [r3, #12]
+ 8000346:	4a21      	ldr	r2, [pc, #132]	; (80003cc <dma1_ch4_stream6+0xe0>)
+ 8000348:	f443 1380 	orr.w	r3, r3, #1048576	; 0x100000
+ 800034c:	60d3      	str	r3, [r2, #12]
+	DMA1->HIFCR |= (1U<<21);
+ 800034e:	4b1f      	ldr	r3, [pc, #124]	; (80003cc <dma1_ch4_stream6+0xe0>)
+ 8000350:	68db      	ldr	r3, [r3, #12]
+ 8000352:	4a1e      	ldr	r2, [pc, #120]	; (80003cc <dma1_ch4_stream6+0xe0>)
+ 8000354:	f443 1300 	orr.w	r3, r3, #2097152	; 0x200000
+ 8000358:	60d3      	str	r3, [r2, #12]
+
+	/*Configrar el buffer de destino*/
+	DMA1_Stream6->PAR = destino;
+ 800035a:	4a1b      	ldr	r2, [pc, #108]	; (80003c8 <dma1_ch4_stream6+0xdc>)
+ 800035c:	68bb      	ldr	r3, [r7, #8]
+ 800035e:	6093      	str	r3, [r2, #8]
+
+	/*Configrar el buffer de origen.
+	 *Esto es escribir la direccion de memoria donde se empiezan a alojas los datos*/
+	DMA1_Stream6->M0AR = origen;
+ 8000360:	4a19      	ldr	r2, [pc, #100]	; (80003c8 <dma1_ch4_stream6+0xdc>)
+ 8000362:	68fb      	ldr	r3, [r7, #12]
+ 8000364:	60d3      	str	r3, [r2, #12]
+
+	/*Configuracion longitud del dato*/
+	DMA1_Stream6->NDTR = longitud_dato;
+ 8000366:	4a18      	ldr	r2, [pc, #96]	; (80003c8 <dma1_ch4_stream6+0xdc>)
+ 8000368:	687b      	ldr	r3, [r7, #4]
+ 800036a:	6053      	str	r3, [r2, #4]
+
+	/*Seleccion de la trnasmmmision, esto es seleccionar el canal 4, flujo 6*/
+	DMA1_Stream6->CR =SxCR_CHSEL4;
+ 800036c:	4b16      	ldr	r3, [pc, #88]	; (80003c8 <dma1_ch4_stream6+0xdc>)
+ 800036e:	f04f 6200 	mov.w	r2, #134217728	; 0x8000000
+ 8000372:	601a      	str	r2, [r3, #0]
+
+	/*Configuracion de la memoria en modo incremento.
+	 * En esta opcion se escoge si se incrmeta la direccion de memoria, el priferico o ambos*/
+	DMA1_Stream6->CR |=SxCR_MINC;
+ 8000374:	4b14      	ldr	r3, [pc, #80]	; (80003c8 <dma1_ch4_stream6+0xdc>)
+ 8000376:	681b      	ldr	r3, [r3, #0]
+ 8000378:	4a13      	ldr	r2, [pc, #76]	; (80003c8 <dma1_ch4_stream6+0xdc>)
+ 800037a:	f443 6380 	orr.w	r3, r3, #1024	; 0x400
+ 800037e:	6013      	str	r3, [r2, #0]
+
+	/*Configiracion de la direccion  de trnasferencia.
+	 *Si los datos se van del periferico a la memoria o de la memoria al periferico
+	 *Para este caso de memoria a periferico*/
+	DMA1_Stream6->CR |=SxCR_DIR;
+ 8000380:	4b11      	ldr	r3, [pc, #68]	; (80003c8 <dma1_ch4_stream6+0xdc>)
+ 8000382:	681b      	ldr	r3, [r3, #0]
+ 8000384:	4a10      	ldr	r2, [pc, #64]	; (80003c8 <dma1_ch4_stream6+0xdc>)
+ 8000386:	f043 0340 	orr.w	r3, r3, #64	; 0x40
+ 800038a:	6013      	str	r3, [r2, #0]
+
+	/********** Habilita la interrupcion por finalizacion de la trasferemcia **********/
+
+	/*Activacion de la interrupcion por trnasferecia completa en el DMA*/
+	DMA1_Stream6->CR |=SxCR_TCIE;
+ 800038c:	4b0e      	ldr	r3, [pc, #56]	; (80003c8 <dma1_ch4_stream6+0xdc>)
+ 800038e:	681b      	ldr	r3, [r3, #0]
+ 8000390:	4a0d      	ldr	r2, [pc, #52]	; (80003c8 <dma1_ch4_stream6+0xdc>)
+ 8000392:	f043 0310 	orr.w	r3, r3, #16
+ 8000396:	6013      	str	r3, [r2, #0]
+	/*Activa la interrupcion del DMA en el NVIC*/
+	NVIC_EnableIRQ(DMA1_Stream6_IRQn);
+ 8000398:	2011      	movs	r0, #17
+ 800039a:	f7ff ff89 	bl	80002b0 <__NVIC_EnableIRQ>
+
+
+	/*Desactivar el modo FIFO (Habilitar el modo drecto)*/
+	DMA1_Stream6->FCR = 0;
+ 800039e:	4b0a      	ldr	r3, [pc, #40]	; (80003c8 <dma1_ch4_stream6+0xdc>)
+ 80003a0:	2200      	movs	r2, #0
+ 80003a2:	615a      	str	r2, [r3, #20]
+
+	/*Habilitar el flujo 6 canal 4 del DMA1*/
+	DMA1_Stream6->CR|=SxCR_EN;
+ 80003a4:	4b08      	ldr	r3, [pc, #32]	; (80003c8 <dma1_ch4_stream6+0xdc>)
+ 80003a6:	681b      	ldr	r3, [r3, #0]
+ 80003a8:	4a07      	ldr	r2, [pc, #28]	; (80003c8 <dma1_ch4_stream6+0xdc>)
+ 80003aa:	f043 0301 	orr.w	r3, r3, #1
+ 80003ae:	6013      	str	r3, [r2, #0]
+
+	/*Habilitar el trnasmisor de la uart por el DMA*/
+	USART2->CR3 |= DMAT;
+ 80003b0:	4b07      	ldr	r3, [pc, #28]	; (80003d0 <dma1_ch4_stream6+0xe4>)
+ 80003b2:	695b      	ldr	r3, [r3, #20]
+ 80003b4:	4a06      	ldr	r2, [pc, #24]	; (80003d0 <dma1_ch4_stream6+0xe4>)
+ 80003b6:	f043 0380 	orr.w	r3, r3, #128	; 0x80
+ 80003ba:	6153      	str	r3, [r2, #20]
+
+	/*Habilitar el DMA*/
+
+
+}
+ 80003bc:	bf00      	nop
+ 80003be:	3710      	adds	r7, #16
+ 80003c0:	46bd      	mov	sp, r7
+ 80003c2:	bd80      	pop	{r7, pc}
+ 80003c4:	40023800 	.word	0x40023800
+ 80003c8:	400260a0 	.word	0x400260a0
+ 80003cc:	40026000 	.word	0x40026000
+ 80003d0:	40004400 	.word	0x40004400
+
+080003d4 <uart2_rx_tx_init>:
+	UE = 0: Prescaler USART y salidas deshabilitadas
+	UE = 1: USART habilitado */
+}
+
+void uart2_rx_tx_init(void)
+{
+ 80003d4:	b580      	push	{r7, lr}
+ 80003d6:	af00      	add	r7, sp, #0
+	/***************Configurción del puerto UART**************/
+	/*Active el acceso al reloj para los pines del uart (gpioa)*/
+	RCC->AHB1ENR |= GPIOAEN;
+ 80003d8:	4b32      	ldr	r3, [pc, #200]	; (80004a4 <uart2_rx_tx_init+0xd0>)
+ 80003da:	6b1b      	ldr	r3, [r3, #48]	; 0x30
+ 80003dc:	4a31      	ldr	r2, [pc, #196]	; (80004a4 <uart2_rx_tx_init+0xd0>)
+ 80003de:	f043 0301 	orr.w	r3, r3, #1
+ 80003e2:	6313      	str	r3, [r2, #48]	; 0x30
+	/*Congigure el pin correpondiente (en este caso solo trnasmisión y es el pin PA2) en modo alternativo*/
+	GPIOA->MODER &=~ (1U<<4);//Bit 4 del registro MODER en el periferico GPIOA en 0. &=~ es invertir
+ 80003e4:	4b30      	ldr	r3, [pc, #192]	; (80004a8 <uart2_rx_tx_init+0xd4>)
+ 80003e6:	681b      	ldr	r3, [r3, #0]
+ 80003e8:	4a2f      	ldr	r2, [pc, #188]	; (80004a8 <uart2_rx_tx_init+0xd4>)
+ 80003ea:	f023 0310 	bic.w	r3, r3, #16
+ 80003ee:	6013      	str	r3, [r2, #0]
+	GPIOA->MODER |=  (1U<<5);//Bit 5 del registro MODER en el periferico GPIOA en 1.
+ 80003f0:	4b2d      	ldr	r3, [pc, #180]	; (80004a8 <uart2_rx_tx_init+0xd4>)
+ 80003f2:	681b      	ldr	r3, [r3, #0]
+ 80003f4:	4a2c      	ldr	r2, [pc, #176]	; (80004a8 <uart2_rx_tx_init+0xd4>)
+ 80003f6:	f043 0320 	orr.w	r3, r3, #32
+ 80003fa:	6013      	str	r3, [r2, #0]
+	/*Configuración del pin PA3 en cmodo alternativo*/
+	GPIOA->MODER &= ~(1U<<6);
+ 80003fc:	4b2a      	ldr	r3, [pc, #168]	; (80004a8 <uart2_rx_tx_init+0xd4>)
+ 80003fe:	681b      	ldr	r3, [r3, #0]
+ 8000400:	4a29      	ldr	r2, [pc, #164]	; (80004a8 <uart2_rx_tx_init+0xd4>)
+ 8000402:	f023 0340 	bic.w	r3, r3, #64	; 0x40
+ 8000406:	6013      	str	r3, [r2, #0]
+	GPIOA->MODER |=  (1U<<7);
+ 8000408:	4b27      	ldr	r3, [pc, #156]	; (80004a8 <uart2_rx_tx_init+0xd4>)
+ 800040a:	681b      	ldr	r3, [r3, #0]
+ 800040c:	4a26      	ldr	r2, [pc, #152]	; (80004a8 <uart2_rx_tx_init+0xd4>)
+ 800040e:	f043 0380 	orr.w	r3, r3, #128	; 0x80
+ 8000412:	6013      	str	r3, [r2, #0]
+
+	/*Congigure el pin correpondiente (en este caso solo trnasmisión y es el pin PA2) en el tipo de modo alternativo
+	  en este caso como uart (AF07)*/
+	GPIOA->AFR[0] |=  (1U<<8);
+ 8000414:	4b24      	ldr	r3, [pc, #144]	; (80004a8 <uart2_rx_tx_init+0xd4>)
+ 8000416:	6a1b      	ldr	r3, [r3, #32]
+ 8000418:	4a23      	ldr	r2, [pc, #140]	; (80004a8 <uart2_rx_tx_init+0xd4>)
+ 800041a:	f443 7380 	orr.w	r3, r3, #256	; 0x100
+ 800041e:	6213      	str	r3, [r2, #32]
+	GPIOA->AFR[0] |=  (1U<<9);
+ 8000420:	4b21      	ldr	r3, [pc, #132]	; (80004a8 <uart2_rx_tx_init+0xd4>)
+ 8000422:	6a1b      	ldr	r3, [r3, #32]
+ 8000424:	4a20      	ldr	r2, [pc, #128]	; (80004a8 <uart2_rx_tx_init+0xd4>)
+ 8000426:	f443 7300 	orr.w	r3, r3, #512	; 0x200
+ 800042a:	6213      	str	r3, [r2, #32]
+	GPIOA->AFR[0] |=  (1U<<10);
+ 800042c:	4b1e      	ldr	r3, [pc, #120]	; (80004a8 <uart2_rx_tx_init+0xd4>)
+ 800042e:	6a1b      	ldr	r3, [r3, #32]
+ 8000430:	4a1d      	ldr	r2, [pc, #116]	; (80004a8 <uart2_rx_tx_init+0xd4>)
+ 8000432:	f443 6380 	orr.w	r3, r3, #1024	; 0x400
+ 8000436:	6213      	str	r3, [r2, #32]
+	//GPIOA->AFR[0] |=  (1U<<8|1U<<9|1U<<10);
+	GPIOA->AFR[0] &= ~(1U<<11);
+ 8000438:	4b1b      	ldr	r3, [pc, #108]	; (80004a8 <uart2_rx_tx_init+0xd4>)
+ 800043a:	6a1b      	ldr	r3, [r3, #32]
+ 800043c:	4a1a      	ldr	r2, [pc, #104]	; (80004a8 <uart2_rx_tx_init+0xd4>)
+ 800043e:	f423 6300 	bic.w	r3, r3, #2048	; 0x800
+ 8000442:	6213      	str	r3, [r2, #32]
+	/*Congigure el pin correpondiente (en este caso solo trnasmisión y es el pin PA3) en el tipo de modo alternativo
+		  en este caso como uart (AF07)*/
+	GPIOA->AFR[0] |=  (1U<<14|1U<<13|1U<<12);
+ 8000444:	4b18      	ldr	r3, [pc, #96]	; (80004a8 <uart2_rx_tx_init+0xd4>)
+ 8000446:	6a1b      	ldr	r3, [r3, #32]
+ 8000448:	4a17      	ldr	r2, [pc, #92]	; (80004a8 <uart2_rx_tx_init+0xd4>)
+ 800044a:	f443 43e0 	orr.w	r3, r3, #28672	; 0x7000
+ 800044e:	6213      	str	r3, [r2, #32]
+	GPIOA->AFR[0] &= ~(1U<<15);
+ 8000450:	4b15      	ldr	r3, [pc, #84]	; (80004a8 <uart2_rx_tx_init+0xd4>)
+ 8000452:	6a1b      	ldr	r3, [r3, #32]
+ 8000454:	4a14      	ldr	r2, [pc, #80]	; (80004a8 <uart2_rx_tx_init+0xd4>)
+ 8000456:	f423 4300 	bic.w	r3, r3, #32768	; 0x8000
+ 800045a:	6213      	str	r3, [r2, #32]
+	 de datos esta configurado como un vector de dos posiciones con L=0 y H=1. El vaor del refistro AFR[L H]
+	 se optiene de la Table 11. Alternate function pag 57 hoja tecnica*/
+
+	/***************Configurción del modulo UART**************/
+	/*Habilitar el acceso al reloj de uart*/
+	RCC->APB1ENR |= UART2EN;/* En el periferico RCC se accede al registro APB1ENR y se cmodifica el
+ 800045c:	4b11      	ldr	r3, [pc, #68]	; (80004a4 <uart2_rx_tx_init+0xd0>)
+ 800045e:	6c1b      	ldr	r3, [r3, #64]	; 0x40
+ 8000460:	4a10      	ldr	r2, [pc, #64]	; (80004a4 <uart2_rx_tx_init+0xd0>)
+ 8000462:	f443 3300 	orr.w	r3, r3, #131072	; 0x20000
+ 8000466:	6413      	str	r3, [r2, #64]	; 0x40
+	registro operandolo con UARTEN = (1U<<17)*/
+
+	/*Confugurar la velocidad en baudios (baudrate) del uart*/
+	uart_set_bautrate(USART2, APB1_CLK, BAUDRATE);
+ 8000468:	f44f 32e1 	mov.w	r2, #115200	; 0x1c200
+ 800046c:	490f      	ldr	r1, [pc, #60]	; (80004ac <uart2_rx_tx_init+0xd8>)
+ 800046e:	4810      	ldr	r0, [pc, #64]	; (80004b0 <uart2_rx_tx_init+0xdc>)
+ 8000470:	f000 f820 	bl	80004b4 <uart_set_bautrate>
+
+
+	/* Habilita la reseccion por el DMA */
+	USART2->CR3 |= DMAR;
+ 8000474:	4b0e      	ldr	r3, [pc, #56]	; (80004b0 <uart2_rx_tx_init+0xdc>)
+ 8000476:	695b      	ldr	r3, [r3, #20]
+ 8000478:	4a0d      	ldr	r2, [pc, #52]	; (80004b0 <uart2_rx_tx_init+0xdc>)
+ 800047a:	f043 0340 	orr.w	r3, r3, #64	; 0x40
+ 800047e:	6153      	str	r3, [r2, #20]
+
+	/* Habilita la transmision por el DMA */
+	USART2->CR3 |= DMAT;
+ 8000480:	4b0b      	ldr	r3, [pc, #44]	; (80004b0 <uart2_rx_tx_init+0xdc>)
+ 8000482:	695b      	ldr	r3, [r3, #20]
+ 8000484:	4a0a      	ldr	r2, [pc, #40]	; (80004b0 <uart2_rx_tx_init+0xdc>)
+ 8000486:	f043 0380 	orr.w	r3, r3, #128	; 0x80
+ 800048a:	6153      	str	r3, [r2, #20]
+
+	/*Configurar la dirección de trnasferencia para este caso trnasmision y recepción de datos*/
+	USART2->CR1 = (CR1_TE | CR1_RE);/* trnasmision y recepción de datos. No se uso el oprador |= (OR) por que se aprobecho para limpiar
+ 800048c:	4b08      	ldr	r3, [pc, #32]	; (80004b0 <uart2_rx_tx_init+0xdc>)
+ 800048e:	220c      	movs	r2, #12
+ 8000490:	60da      	str	r2, [r3, #12]
+	todala uart por lo que la operacion (1U<<3) al colocar el bit 3 en 1 el resto
+	los pone en cero por lo  que es la confihuracion predeterminada de la uart*/
+
+	/*Habilitar el modulo uart*/
+	USART2->CR1 |= CR1_UE;/*Cuando se borra este bit, los preescaladores y salidas USART se detienen y finaliza
+ 8000492:	4b07      	ldr	r3, [pc, #28]	; (80004b0 <uart2_rx_tx_init+0xdc>)
+ 8000494:	68db      	ldr	r3, [r3, #12]
+ 8000496:	4a06      	ldr	r2, [pc, #24]	; (80004b0 <uart2_rx_tx_init+0xdc>)
+ 8000498:	f443 5300 	orr.w	r3, r3, #8192	; 0x2000
+ 800049c:	60d3      	str	r3, [r2, #12]
+	la transferencia de bytes actual para reducir el consumo de energía. Este bit se establece y borra por software.
+	UE = 0: Prescaler USART y salidas deshabilitadas
+	UE = 1: USART habilitado */
+}
+ 800049e:	bf00      	nop
+ 80004a0:	bd80      	pop	{r7, pc}
+ 80004a2:	bf00      	nop
+ 80004a4:	40023800 	.word	0x40023800
+ 80004a8:	40020000 	.word	0x40020000
+ 80004ac:	00f42400 	.word	0x00f42400
+ 80004b0:	40004400 	.word	0x40004400
+
+080004b4 <uart_set_bautrate>:
+	/*Se retorna el dato leido*/
+	return USART2->DR;
+}
+
+static void uart_set_bautrate(USART_TypeDef *USARTx, uint32_t clkPerife, uint32_t BaudRate)
+{
+ 80004b4:	b580      	push	{r7, lr}
+ 80004b6:	b084      	sub	sp, #16
+ 80004b8:	af00      	add	r7, sp, #0
+ 80004ba:	60f8      	str	r0, [r7, #12]
+ 80004bc:	60b9      	str	r1, [r7, #8]
+ 80004be:	607a      	str	r2, [r7, #4]
+	USARTx->BRR = compute_uart_bd(clkPerife, BaudRate);
+ 80004c0:	6879      	ldr	r1, [r7, #4]
+ 80004c2:	68b8      	ldr	r0, [r7, #8]
+ 80004c4:	f000 f808 	bl	80004d8 <compute_uart_bd>
+ 80004c8:	4603      	mov	r3, r0
+ 80004ca:	461a      	mov	r2, r3
+ 80004cc:	68fb      	ldr	r3, [r7, #12]
+ 80004ce:	609a      	str	r2, [r3, #8]
+}
+ 80004d0:	bf00      	nop
+ 80004d2:	3710      	adds	r7, #16
+ 80004d4:	46bd      	mov	sp, r7
+ 80004d6:	bd80      	pop	{r7, pc}
+
+080004d8 <compute_uart_bd>:
+
+static uint16_t compute_uart_bd(uint32_t clkPerife, uint32_t BaudRate)
+{
+ 80004d8:	b480      	push	{r7}
+ 80004da:	b083      	sub	sp, #12
+ 80004dc:	af00      	add	r7, sp, #0
+ 80004de:	6078      	str	r0, [r7, #4]
+ 80004e0:	6039      	str	r1, [r7, #0]
+	return((clkPerife + (BaudRate/2U))/BaudRate);
+ 80004e2:	683b      	ldr	r3, [r7, #0]
+ 80004e4:	085a      	lsrs	r2, r3, #1
+ 80004e6:	687b      	ldr	r3, [r7, #4]
+ 80004e8:	441a      	add	r2, r3
+ 80004ea:	683b      	ldr	r3, [r7, #0]
+ 80004ec:	fbb2 f3f3 	udiv	r3, r2, r3
+ 80004f0:	b29b      	uxth	r3, r3
+	/*El valor que devuelve esta función se escribira en el
+	 registro de velovidad de baudios BuadRate de la UART*/
+}
+ 80004f2:	4618      	mov	r0, r3
+ 80004f4:	370c      	adds	r7, #12
+ 80004f6:	46bd      	mov	sp, r7
+ 80004f8:	f85d 7b04 	ldr.w	r7, [sp], #4
+ 80004fc:	4770      	bx	lr
+	...
+
+08000500 <Reset_Handler>:
+
+  .section .text.Reset_Handler
+  .weak Reset_Handler
+  .type Reset_Handler, %function
+Reset_Handler:
+  ldr   r0, =_estack
+ 8000500:	480d      	ldr	r0, [pc, #52]	; (8000538 <LoopForever+0x2>)
+  mov   sp, r0          /* set stack pointer */
+ 8000502:	4685      	mov	sp, r0
+/* Call the clock system initialization function.*/
+  bl  SystemInit
+ 8000504:	f3af 8000 	nop.w
+
+/* Copy the data segment initializers from flash to SRAM */
+  ldr r0, =_sdata
+ 8000508:	480c      	ldr	r0, [pc, #48]	; (800053c <LoopForever+0x6>)
+  ldr r1, =_edata
+ 800050a:	490d      	ldr	r1, [pc, #52]	; (8000540 <LoopForever+0xa>)
+  ldr r2, =_sidata
+ 800050c:	4a0d      	ldr	r2, [pc, #52]	; (8000544 <LoopForever+0xe>)
+  movs r3, #0
+ 800050e:	2300      	movs	r3, #0
+  b LoopCopyDataInit
+ 8000510:	e002      	b.n	8000518 <LoopCopyDataInit>
+
+08000512 <CopyDataInit>:
+
+CopyDataInit:
+  ldr r4, [r2, r3]
+ 8000512:	58d4      	ldr	r4, [r2, r3]
+  str r4, [r0, r3]
+ 8000514:	50c4      	str	r4, [r0, r3]
+  adds r3, r3, #4
+ 8000516:	3304      	adds	r3, #4
+
+08000518 <LoopCopyDataInit>:
+
+LoopCopyDataInit:
+  adds r4, r0, r3
+ 8000518:	18c4      	adds	r4, r0, r3
+  cmp r4, r1
+ 800051a:	428c      	cmp	r4, r1
+  bcc CopyDataInit
+ 800051c:	d3f9      	bcc.n	8000512 <CopyDataInit>
+
+/* Zero fill the bss segment. */
+  ldr r2, =_sbss
+ 800051e:	4a0a      	ldr	r2, [pc, #40]	; (8000548 <LoopForever+0x12>)
+  ldr r4, =_ebss
+ 8000520:	4c0a      	ldr	r4, [pc, #40]	; (800054c <LoopForever+0x16>)
+  movs r3, #0
+ 8000522:	2300      	movs	r3, #0
+  b LoopFillZerobss
+ 8000524:	e001      	b.n	800052a <LoopFillZerobss>
+
+08000526 <FillZerobss>:
+
+FillZerobss:
+  str  r3, [r2]
+ 8000526:	6013      	str	r3, [r2, #0]
+  adds r2, r2, #4
+ 8000528:	3204      	adds	r2, #4
+
+0800052a <LoopFillZerobss>:
+
+LoopFillZerobss:
+  cmp r2, r4
+ 800052a:	42a2      	cmp	r2, r4
+  bcc FillZerobss
+ 800052c:	d3fb      	bcc.n	8000526 <FillZerobss>
+
+/* Call static constructors */
+  bl __libc_init_array
+ 800052e:	f000 f811 	bl	8000554 <__libc_init_array>
+/* Call the application's entry point.*/
+  bl main
+ 8000532:	f7ff fe67 	bl	8000204 <main>
+
+08000536 <LoopForever>:
+
+LoopForever:
+  b LoopForever
+ 8000536:	e7fe      	b.n	8000536 <LoopForever>
+  ldr   r0, =_estack
+ 8000538:	20020000 	.word	0x20020000
+  ldr r0, =_sdata
+ 800053c:	20000000 	.word	0x20000000
+  ldr r1, =_edata
+ 8000540:	20000000 	.word	0x20000000
+  ldr r2, =_sidata
+ 8000544:	080005dc 	.word	0x080005dc
+  ldr r2, =_sbss
+ 8000548:	20000000 	.word	0x20000000
+  ldr r4, =_ebss
+ 800054c:	2000001c 	.word	0x2000001c
+
+08000550 <ADC_IRQHandler>:
+ * @retval : None
+*/
+  .section .text.Default_Handler,"ax",%progbits
+Default_Handler:
+Infinite_Loop:
+  b Infinite_Loop
+ 8000550:	e7fe      	b.n	8000550 <ADC_IRQHandler>
+	...
+
+08000554 <__libc_init_array>:
+ 8000554:	b570      	push	{r4, r5, r6, lr}
+ 8000556:	4d0d      	ldr	r5, [pc, #52]	; (800058c <__libc_init_array+0x38>)
+ 8000558:	4c0d      	ldr	r4, [pc, #52]	; (8000590 <__libc_init_array+0x3c>)
+ 800055a:	1b64      	subs	r4, r4, r5
+ 800055c:	10a4      	asrs	r4, r4, #2
+ 800055e:	2600      	movs	r6, #0
+ 8000560:	42a6      	cmp	r6, r4
+ 8000562:	d109      	bne.n	8000578 <__libc_init_array+0x24>
+ 8000564:	4d0b      	ldr	r5, [pc, #44]	; (8000594 <__libc_init_array+0x40>)
+ 8000566:	4c0c      	ldr	r4, [pc, #48]	; (8000598 <__libc_init_array+0x44>)
+ 8000568:	f000 f818 	bl	800059c <_init>
+ 800056c:	1b64      	subs	r4, r4, r5
+ 800056e:	10a4      	asrs	r4, r4, #2
+ 8000570:	2600      	movs	r6, #0
+ 8000572:	42a6      	cmp	r6, r4
+ 8000574:	d105      	bne.n	8000582 <__libc_init_array+0x2e>
+ 8000576:	bd70      	pop	{r4, r5, r6, pc}
+ 8000578:	f855 3b04 	ldr.w	r3, [r5], #4
+ 800057c:	4798      	blx	r3
+ 800057e:	3601      	adds	r6, #1
+ 8000580:	e7ee      	b.n	8000560 <__libc_init_array+0xc>
+ 8000582:	f855 3b04 	ldr.w	r3, [r5], #4
+ 8000586:	4798      	blx	r3
+ 8000588:	3601      	adds	r6, #1
+ 800058a:	e7f2      	b.n	8000572 <__libc_init_array+0x1e>
+ 800058c:	080005d4 	.word	0x080005d4
+ 8000590:	080005d4 	.word	0x080005d4
+ 8000594:	080005d4 	.word	0x080005d4
+ 8000598:	080005d8 	.word	0x080005d8
+
+0800059c <_init>:
+ 800059c:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
+ 800059e:	bf00      	nop
+ 80005a0:	bcf8      	pop	{r3, r4, r5, r6, r7}
+ 80005a2:	bc08      	pop	{r3}
+ 80005a4:	469e      	mov	lr, r3
+ 80005a6:	4770      	bx	lr
+
+080005a8 <_fini>:
+ 80005a8:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
+ 80005aa:	bf00      	nop
+ 80005ac:	bcf8      	pop	{r3, r4, r5, r6, r7}
+ 80005ae:	bc08      	pop	{r3}
+ 80005b0:	469e      	mov	lr, r3
+ 80005b2:	4770      	bx	lr
